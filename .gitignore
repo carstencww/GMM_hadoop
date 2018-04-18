@@ -1,0 +1,7 @@
+*.crc
+*.pyc
+test.sh
+raw_data/
+data/
+*nohup*
+log.txt
