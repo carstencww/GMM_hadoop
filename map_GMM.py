@@ -10,7 +10,7 @@ def multinorm(x, mu, cov):
 	COE = 1 / ( ((2* np.pi)**(len(mu)/2)) * (np.linalg.det(cov)**(1/2)) )
 	EXP = (-0.5) * ((x-mu).T.dot(np.linalg.inv(cov))).dot((x-mu))
 	#print(COE)
-	print(EXP)
+	#print(EXP)
 	return COE * np.exp(EXP)
 
 if __name__ == '__main__':
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 		total = sum(partial_gamma)
 
 		gamma = [x / total for x in partial_gamma]	
-		print(partial_gamma)
+		print(gamma)
 		for i in range(0,10):
 			pi_numer_sum[i] += gamma[i]
 			q_numer_sum[i] += gamma[i] * coords
