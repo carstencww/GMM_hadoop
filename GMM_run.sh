@@ -2,10 +2,10 @@
 
 OUT_FILE=/user/ChanCarsten/out_GMM
 IN_FILE=/user/ChanCarsten/input_GMM/image_train.txt
-BMM () {
+GMM () {
 hadoop dfs -rm -R $OUT_FILE
 hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
--D mapred.map.tasks=20 \
+-D mapred.map.tasks=100 \
 -D mapred.reduce.tasks=10 \
 -file $PWD/train_paras.txt \
 -file $PWD/map_GMM.py -mapper map_GMM.py \
@@ -15,12 +15,12 @@ hadoop jar /usr/hdp/current/hadoop-mapreduce-client/hadoop-streaming.jar \
 hadoop fs -getmerge $OUT_FILE ./paras_result.txt
 }
 echo $PWD
-BMM
+GMM
 converging=( $(./check_converge.py) )
 while [ ${converging[0]} = 1 ]; do
 mv paras_result.txt train_paras.txt
 echo ${converging[1]} >> log.txt
-BMM
+GMM
 converging=( $(./check_converge.py) )
 done
 
