@@ -4,23 +4,27 @@ result_mu = [0]*10
 result_pi = [0]*10
 result_cov = [0]*10
 def multinorm(x, mu, cov):
-	COE = -np.log(  ((2* np.pi)**(len(mu)/2)) * (np.linalg.det(cov)**(1/2)))
+
+	COE = -float(len(mu)) * np.log(2* np.pi) / 2 - np.log(np.linalg.det(cov)) / 2
 	EXP = (-0.5) * (np.dot(np.dot((x-mu),np.linalg.inv(cov)),(x-mu)))
+
+
 	#print(COE)
-	#print(EXP)
+
 	return COE + EXP
 if __name__ == '__main__':
 	with open("./paras_result.txt","r") as paras:
 		for para in paras:
 			para = para.strip()
 			class_no , para = para.split('\t')
-			class_no = int(class_no)
-			pi, cov , mu = para.split(":")
-			mu =mu.split(",")
-			cov = cov.split(",")
-			result_pi[class_no] = float(pi)
-			result_mu[class_no] = [float(x) for x in mu]
-			result_cov[class_no] = np.asarray([float(x) for x in cov]).reshape(25,25)
+			if "__" not in class_no:
+				class_no = int(class_no)
+				pi, cov , mu = para.split(":")
+				mu =mu.split(",")
+				cov = cov.split(",")
+				result_pi[class_no] = float(pi)
+				result_mu[class_no] = [float(x) for x in mu]
+				result_cov[class_no] = np.asarray([float(x) for x in cov]).reshape(25,25)
 	result_mu = np.asarray(result_mu)
 	gamma = np.zeros(10)
 	class_cnt=[[] for x in range(10)]

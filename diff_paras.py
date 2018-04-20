@@ -41,7 +41,7 @@ diff = np.linalg.norm(origin_mu - result_mu, axis=1)
 dist = diff.sum() / 25
 dist += np.linalg.norm(origin_pi - result_pi)
 dist += np.linalg.norm(origin_cov - result_cov, axis = 1).sum() / 625
-if dist<0.1 or np.isnan(dist):
+if dist<10 or np.isnan(dist):
 	print("0")
 else: 
 	print("1")
