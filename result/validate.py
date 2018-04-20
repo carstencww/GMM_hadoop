@@ -4,14 +4,10 @@ result_mu = [0]*10
 result_pi = [0]*10
 result_cov = [0]*10
 def multinorm(x, mu, cov):
-
 	COE = -float(len(mu)) * np.log(2* np.pi) / 2 - np.log(np.linalg.det(cov)) / 2
 	EXP = (-0.5) * (np.dot(np.dot((x-mu),np.linalg.inv(cov)),(x-mu)))
-
-
-	#print(COE)
-
 	return COE + EXP
+
 if __name__ == '__main__':
 	with open("./paras_result.txt","r") as paras:
 		for para in paras:

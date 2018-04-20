@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import numpy as np
-
 origin_logli = None
 with open("./train_paras.txt","r") as paras:
 	for para in paras:

@@ -31,13 +31,10 @@ for i in range(0,10):
 	class_mean[i] = np.mean(class_data[i], axis =0)
 	class_data[i] = class_data[i] - class_mean[i]
 	class_cov[i] = np.matmul(np.transpose(class_data[i]),class_data[i]) / (class_cnt[i])
-#print(class_mean[0].shape)
-#print(class_cov[0].shape)
-#print(class_cnt)
 total = float(sum(class_cnt))
-#print(total)
+
 with open(paras_f, "w") as cenf:
 	for i in range(10):
 		cov = np.reshape(class_cov[i],-1)
 		cenf.write(str(i)+'\t'+str(class_cnt[i]/total)+":"+",".join(str(y) for y in cov)+":"+",".join(str(x) for x in class_mean[i])+'\n')
-#print(class_cnt)
+

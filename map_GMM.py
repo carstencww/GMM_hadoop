@@ -7,14 +7,8 @@ origin_pi = [0]*10
 origin_cov = [0] * 10
 
 def multinorm(x, mu, cov):
-	#print(check_symmetric(cov))
-	#print(np.linalg.eigvals(cov))
-	#print(np.transpose(x-mu).shape)
 	COE = -float(len(mu)) * np.log(2* np.pi) / 2 - np.log(np.linalg.det(cov)) / 2
 	EXP = (-0.5) * (np.dot(np.dot((x-mu),np.linalg.inv(cov)),(x-mu)))
-	#print(EXP.shape)
-	#print(COE+EXP)
-	#print(EXP)
 	return COE + EXP
 
 if __name__ == '__main__':
@@ -36,7 +30,7 @@ if __name__ == '__main__':
 	mu_numer_sum = [np.zeros(origin_mu[0].shape) for x in range(10)]
 	pi_numer_sum = [0] * 10
 	cov_numer_sum = [np.zeros(origin_cov[0].shape) for x in range(10)]
-	#print(mu_numer_sum[0].shape)
+
 	for line in sys.stdin:
 		partial_gamma = [0]*10
 		cnt+=1
@@ -54,17 +48,17 @@ if __name__ == '__main__':
 				partial_gamma[i] = 1
 			else:
 				partial_gamma[i] = partial_gamma[i] / total
-		#print(partial_gamma)
+
 		for i in range(0,10):
 			pi_numer_sum[i] += partial_gamma[i]
 			mu_numer_sum[i] += partial_gamma[i] * coords
 			cov_numer_sum[i] += partial_gamma[i] * np.matmul(np.reshape(coords - origin_mu[i],(-1,1)),np.reshape(coords - origin_mu[i],(1,-1)))
 	
-	#print(check_symmetric(cov_numer_sum[0]))
+
 	for i in range(0,10):
 		covmat = np.reshape(cov_numer_sum[i],-1)
 		print(str(i)+"\t"+str(cnt)+":"+str(pi_numer_sum[i])+":"+",".join(str(y) for y in covmat)+":"+",".join(str(x) for x in mu_numer_sum[i]))
 	print("__LOGLI"+"\t"+str(logli))
-	#print(sum(pi_numer_sum))
+
 
 
