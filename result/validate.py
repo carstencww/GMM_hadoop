@@ -1,69 +1,64 @@
 #!/usr/bin/env python
 import numpy as np
-from operator import itemgetter
-import collections
-xs = [0.05, 0.1, 0.5, 1]
-#xs = [ 1 ]
-for x in xs:
-	result_centroid = [0]*10
-
-	with open("./centroid_result.txt","r") as cens:
-		for cen in cens:
-			cen = cen.strip()
-			class_no , centroid = cen.split('\t')
+result_mu = [0]*10
+result_pi = [0]*10
+result_cov = [0]*10
+def multinorm(x, mu, cov):
+	COE = -np.log(  ((2* np.pi)**(len(mu)/2)) * (np.linalg.det(cov)**(1/2)))
+	EXP = (-0.5) * (np.dot(np.dot((x-mu),np.linalg.inv(cov)),(x-mu)))
+	#print(COE)
+	#print(EXP)
+	return COE + EXP
+if __name__ == '__main__':
+	with open("./paras_result.txt","r") as paras:
+		for para in paras:
+			para = para.strip()
+			class_no , para = para.split('\t')
 			class_no = int(class_no)
-			centroid = centroid.split(",")
-			result_centroid[class_no] = [float(pt) for pt in centroid]
-	result_centroid = np.asarray(result_centroid)
-	
+			pi, cov , mu = para.split(":")
+			mu =mu.split(",")
+			cov = cov.split(",")
+			result_pi[class_no] = float(pi)
+			result_mu[class_no] = [float(x) for x in mu]
+			result_cov[class_no] = np.asarray([float(x) for x in cov]).reshape(25,25)
+	result_mu = np.asarray(result_mu)
+	gamma = np.zeros(10)
+	class_cnt=[[] for x in range(10)]
+	with open("../data/image_test.txt","r") as images:
+		idx = 0
+		for image in images:
+			image = image.strip()
+			coords = image.split(",")
+			coords = [float(x) for x in coords]
+			coords = np.asarray(coords)
+			for i in range(0,10):
+				gamma[i] = np.log(result_pi[i]) + multinorm(coords,result_mu[i],result_cov[i])
+			class_no = gamma.argmax()
+			class_cnt[class_no].append(idx)
+			idx += 1
+
 	true_label = []
 	with open("../data/label_test.txt", "r") as f:
 		for label in f:
 			label = label.strip()
 			label = int(label)
 			true_label.append(label)
-	
-	dist = [{} for i in range(10)]
-	with open("../data/image_test.txt","r") as images:
-		idx = 0
-		for image in images:
-			image = image.strip()
-			image = image.split(",")
-			image = [float(im) for im in image]
-			image = np.asarray(image)
-			error = np.linalg.norm(result_centroid - image, axis=1)
-			result = error.argmin()
-			dist[result][idx] = error[result]
-			idx += 1
+
 	major_labels = [0]*10
 	correct_images = [0]*10
 	Num_images = [0]*10
-	m = [0]*10
 	
-	#print(true_label)
 	for i in range(10):
-		elements=sorted(dist[i].items(), key=itemgetter(1),reverse=False)
-	#	print(elements)
-		Num_images[i] = len(elements)
-	
-		m[i] = int(x * Num_images[i])
-	
+		Num_images[i] = len(class_cnt[i])
 		count = np.zeros(10)
-		for j in range(m[i]):
-			count[true_label[elements[j][0]]]+=1
-		print(count)
+		for j in range(len(class_cnt[i])):
+			count[true_label[class_cnt[i][j]]]+=1
+		print(str(i)+": "+str(count))
 		major_labels[i] = count.argmax()
-		for j in range(Num_images[i]):
-			if major_labels[i] == true_label[elements[j][0]]:
-				correct_images[i]+=1
+		correct_images[i] = count[major_labels[i]]
 	Accuracy = [float(correct_images[i])/Num_images[i] for i in range(10)]
-	print("x = "+ str(x))
-	for i in range(10):
-		print(str(i)+'\t'+str(Num_images[i])+'\t'+str(m[i])+'\t'+str(major_labels[i])+'\t'+str(correct_images[i])+'\t'+"{0:0.2f}".format(Accuracy[i]*100)) 
-	print("Total"+'\t'+str(sum(Num_images))+'\t'+str(sum(m))+'\t'+'\t'+str(sum(correct_images))+'\t'+"{0:0.2f}".format(float(sum(correct_images))*100/sum(Num_images)))
+	for i in range(0,10):
+		print(str(i)+'\t'+str(Num_images[i])+'\t'+str(major_labels[i])+'\t'+str(correct_images[i])+'\t'+"{0:0.2f}".format(Accuracy[i]*100)) 
+	print("Total"+'\t'+str(sum(Num_images))+'\t'+'\t'+str(sum(correct_images))+'\t'+"{0:0.2f}".format(float(sum(correct_images))*100/sum(Num_images)))
 	print("\n")
-
-
-
-
 

@@ -30,7 +30,7 @@ for i in range(0,10):
 	class_data[i] = np.asarray(class_data[i])
 	class_mean[i] = np.mean(class_data[i], axis =0)
 	class_data[i] = class_data[i] - class_mean[i]
-	class_cov[i] = np.matmul(np.transpose(class_data[i]),class_data[i]) / (class_cnt[i] -1)
+	class_cov[i] = np.matmul(np.transpose(class_data[i]),class_data[i]) / (class_cnt[i])
 #print(class_mean[0].shape)
 #print(class_cov[0].shape)
 #print(class_cnt)

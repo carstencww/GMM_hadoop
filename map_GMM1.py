@@ -5,14 +5,12 @@ cnt = 0
 origin_mu = [0]*10
 origin_pi = [0]*10
 origin_cov = [0] * 10
-def check_symmetric(a, tol=1e-8):
-	return np.allclose(a, a.T, atol=tol)
-
+new_mu = [0]*10
 def multinorm(x, mu, cov):
-	#print(check_symmetric(cov))
-	#print(np.linalg.eigvals(cov))
-	#print(np.transpose(x-mu).shape)
 	COE = -float(len(mu)) * np.log(2* np.pi) / 2 - np.log(np.linalg.det(cov)) / 2
+	#print((x - mu).shape)
+	#print(np.transpose(x-mu).shape)
+	#COE = -np.log(((2* np.pi)**(len(mu)/2)) * (np.linalg.det(cov)**(1/2)))
 	EXP = (-0.5) * (np.dot(np.dot((x-mu),np.linalg.inv(cov)),(x-mu)))
 	#print(EXP.shape)
 	#print(COE+EXP)
@@ -32,9 +30,16 @@ if __name__ == '__main__':
 			origin_mu[class_no] = [float(x) for x in mu]
 			origin_cov[class_no] = np.asarray([float(x) for x in cov]).reshape(25,25)
 
-	origin_mu = np.asarray(origin_mu)
+	with open("./supp_result.txt","r") as cens:
+		for cen in cens:
+			cen = cen.strip()
+			class_no, paras = cen.split("\t")
+			class_no = int(class_no)
+			paras = paras.split(",")
+			new_mu[class_no] = [float(x) for x in paras]
+		new_mu = np.asarray(new_mu)
 
-	mu_numer_sum = [np.zeros(origin_mu[0].shape) for x in range(10)]
+	#mu_numer_sum = [np.zeros(origin_mu[0].shape) for x in range(10)]
 	pi_numer_sum = [0] * 10
 	cov_numer_sum = [np.zeros(origin_cov[0].shape) for x in range(10)]
 	#print(mu_numer_sum[0].shape)
@@ -57,13 +62,13 @@ if __name__ == '__main__':
 		#print(partial_gamma)
 		for i in range(0,10):
 			pi_numer_sum[i] += partial_gamma[i]
-			mu_numer_sum[i] += partial_gamma[i] * coords
-			#cov_numer_sum[i] += gamma[i] * np.matmul(np.reshape(coords - origin_mu[i],(-1,1)),np.reshape(coords - origin_mu[i],(1,-1)))
-	
-	#print(check_symmetric(cov_numer_sum[0]))
+			#mu_numer_sum[i] += gamma[i] * coords
+			cov_numer_sum[i] += partial_gamma[i] * np.matmul(np.reshape(coords - new_mu[i],(-1,1)),np.reshape(coords - new_mu[i],(1,-1)))
+	#print(pi_numer_sum)
+	#print(cov_numer_sum)
 	for i in range(0,10):
-		#covmat = np.reshape(cov_numer_sum[i],-1)
-		print(str(i)+"\t"+str(cnt)+":"+str(pi_numer_sum[i])+":"+",".join(str(x) for x in mu_numer_sum[i]))
+		covmat = np.reshape(cov_numer_sum[i],-1)
+		print(str(i)+"\t"+str(cnt)+":"+str(pi_numer_sum[i])+":"+",".join(str(y) for y in covmat)+":"+",".join(str(x) for x in new_mu[i]))
 
 	#print(sum(pi_numer_sum))
 
