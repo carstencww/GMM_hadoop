@@ -15,7 +15,7 @@ with open("./paras_result.txt","r") as paras:
 		if "__" in key:
 			result_logli = float(para)
 if origin_logli is not None:
-	if result_logli < origin_logli + 0.0001:
+	if result_logli < origin_logli + 0.1:
 		print("0")
 	else: 
 		print("1")

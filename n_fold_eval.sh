@@ -1,5 +1,5 @@
 #!/bin/bash
-NumOfP=10
+NumOfP=5
 
 iter=$((NumOfP-1))
 n="pca_${NumOfP}part"
